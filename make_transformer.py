@@ -32,6 +32,7 @@ class ModelConfig:
 # --------------------------------------------------------------
 # Transformer Language Model (*exactly* as used in GPT-2) 
 
+
 class NewGELU(nn.Module):
     """
     Implementation of the GELU activation function currently in Google BERT repo (identical to OpenAI GPT).
@@ -39,4 +40,17 @@ class NewGELU(nn.Module):
     """
     def forward(self, x):
         return 0.5 * x * (1.0 + torch.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * torch.pow(x, 3.0))))
+
     
+class CausalSelfAttention(nn.Module):
+    """
+    A vanilla multi-head masked self-attention layer with a projection at the end.
+    It is possible to use torch.nn.MultiheadAttention here but I am including an
+    explicit implementation here to show that there is nothing too scary here.
+    """
+    
+    def __init__(self, config):
+        super().__init__()
+        assert config.n_embd % config.n_head == 0 
+        # key, query, value projections for all heads, but in a batch 
+        
