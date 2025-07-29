@@ -272,3 +272,28 @@ class RNNCell(nn.Module):
         return ht 
     
     
+class GRUCell(nn.Module):
+    """
+    same job as RNN cell, but a bit more complicated recurrence formula
+    that makes the GRU more expressive and easier to optimize.
+    """
+    def __init__(self, config):
+        super().__init__()
+        # input, forget, output, gate
+        self.xh_to_z = nn.Linear(config.n_embd + config.n_embd2, config.n_embd2)
+        self.xh_to_r = nn.Linear(config.n_embd + config.n_embd2, config.n_embd2)
+        self.xh_to_hbar = nn.Linear(config.n_embd + config.n_embd2, config.n_embd2)
+
+    def forward(self, xt, hprev):
+        # first use the reset gate to wipe some channels of the hidden state to zero
+        xh = torch.cat([xt, hprev], dim=1)
+        r = F.sigmoid(self.xh_to_r(xh))
+        hprev_reset = r * hprev
+        # calculate the candidate new hidden state hbar
+        xhr = torch.cat([xt, hprev_reset], dim=1)
+        hbar = F.tanh(self.xh_to_hbar(xhr))
+        # calculate the switch gate that determines if each channel should be updated at all
+        z = F.sigmoid(self.xh_to_z(xh))
+        # blend the previous hidden state and the new candidate hidden state
+        ht = (1 - z) * hprev + z * hbar
+        return ht
