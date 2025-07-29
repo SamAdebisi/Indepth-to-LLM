@@ -193,4 +193,9 @@ class BoWBlock(nn.Module):
         ))
         m = self.mlp
         self.mlpf = lambda x: m.c_proj(F.tanh(m.c_fc(x))) # MLP forward
+        
+    def forward(self, x):
+        x = x + self.cbow(x)
+        x = x + self.mlpf(x) 
+        return x 
 
