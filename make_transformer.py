@@ -270,3 +270,5 @@ class RNNCell(nn.Module):
         xh = torch.cat([xt, hprev], dim=1)
         ht = F.tanh(self.xh_to_h(xh))
         return ht 
+    
+    
