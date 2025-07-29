@@ -198,4 +198,3 @@ class BoWBlock(nn.Module):
         x = x + self.cbow(x)
         x = x + self.mlpf(x) 
         return x 
-
