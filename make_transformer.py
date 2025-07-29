@@ -198,3 +198,26 @@ class BoWBlock(nn.Module):
         x = x + self.cbow(x)
         x = x + self.mlpf(x) 
         return x 
+    
+    
+class BoW(nn.Module):
+    """
+    takes the previous block_size tokens, encodes them with a lookup table,
+    also encodes their positions with lookup table, then averages all of those
+    embeddings up and uses that to predict the next token.
+    """
+
+    def __init__(self, config):
+        super().__init__()
+        self.block_size = config.block_size
+        self.vocab_size = config.vocab_size
+        # token embedding
+        self.wte = nn.Embedding(config.vocab_size, config.n_embd)
+        # position embedding
+        self.wpe = nn.Embedding(config.block_size, config.n_embd)
+        # context block
+        self.context_block = BoWBlock(config)
+        # language model head decoder layer
+        self.lm_head = nn.Linear(config.n_embd, self.vocab_size)
+
+
