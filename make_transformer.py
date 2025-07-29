@@ -106,3 +106,9 @@ class Block(nn.Module):
         return x 
     
     
+class Transformer(nn.Module):
+    """ Transformer Language Model, exactly as seen in GPT-2 """
+    
+    def __init__(self, config):
+        super().__init__()
+        self.block_size = config.block_size 
