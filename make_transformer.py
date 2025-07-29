@@ -220,4 +220,4 @@ class BoW(nn.Module):
         # language model head decoder layer
         self.lm_head = nn.Linear(config.n_embd, self.vocab_size)
 
-
+        return self.block_size 
