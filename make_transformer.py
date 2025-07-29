@@ -150,3 +150,30 @@ class Transformer(nn.Module):
 
         return logits, loss
 
+# -----------------------------------------------------------------------------
+# Bag of Words (BoW) language model
+
+class CausalBoW(nn.Module):
+    """
+    Causal bag of words. Averages the preceding elements and looks suspiciously like
+    a CausalAttention module you'd find in a transformer, for no apparent reason at all ;)
+    """
+    def __init__(self, config):
+        super().__init__()
+
+        # used to mask out vectors and preserve autoregressive property
+        self.block_size = config.block_size
+        self.register_buffer("bias", torch.tril(torch.ones(config.block_size, config.block_size))
+                            .view(1, config.block_size, config.block_size))
+        
+    def forward(self, x):
+        B, T, C = x.size() # batch size, sequence length, n_embd
+
+        # do the weighted average of all preceeding token features
+        att = torch.zeros((B, T, T), device=x.device)
+        att = att.masked_fill(self.bias[:,:T,:T] == 0, float('-inf'))
+        att = F.softmax(att, dim=-1)
+        y = att @ x # (B, T, T) x (B, T, C) -> (B, T, C)
+
+        return y
+
