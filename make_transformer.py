@@ -245,3 +245,21 @@ class BoW(nn.Module):
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1), ignore_index=-1)
 
         return logits, loss
+
+
+# --------------------------------------------
+"""
+Recurrent Neural Net Language model: either a vanilla RNN recurrence or a GRU. 
+Did not implement an LSTM because its API is a bit more annoying as it has 
+both a hidden state and a cell state, but it's very similar to GRU and 
+in practice works just as well. 
+"""
+
+class RNNCell(nn.Module):
+    """ 
+    the job of a 'cell' is to:
+    take input at current time step x_{t} and the hidden state at 
+    the previous time step h_{t-1} and return the resulting hidden state
+    h_{t} at the current timestep
+    """
+    
