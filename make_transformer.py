@@ -177,3 +177,20 @@ class CausalBoW(nn.Module):
 
         return y
 
+
+class BoWBlock(nn.Module):
+    """ collects BoW features and adds an MLP """
+
+    def __init__(self, config):
+        super().__init__()
+
+        # Causal BoW module
+        self.cbow = CausalBoW(config)
+        # MLP assembler
+        self.mlp = nn.ModuleDict(dict(
+            c_fc    = nn.Linear(config.n_embd, config.n_embd2),
+            c_proj  = nn.Linear(config.n_embd2, config.n_embd),
+        ))
+        m = self.mlp
+        self.mlpf = lambda x: m.c_proj(F.tanh(m.c_fc(x))) # MLP forward
+
