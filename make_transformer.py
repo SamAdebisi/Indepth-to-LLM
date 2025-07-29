@@ -94,7 +94,7 @@ class Block(nn.Module):
         self.ln_2 = nn.LayerNorm(config.n_embd)
         self.mlp = nn.ModuleDict(dict(
             c_fc    = nn.Linear(config.n_embd, 4 * config.n_embd), 
-            c_proj  = nn.Linear(4 * config.n_embd, config.n_embd)
+            c_proj  = nn.Linear(4 * config.n_embd, config.n_embd),
             act     = NewGELU(), 
         ))
         m = self.mlp 
