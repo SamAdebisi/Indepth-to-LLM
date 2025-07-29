@@ -84,3 +84,18 @@ class CausalSelfAttention(nn.Module):
         return y 
     
     
+class Block(nn.Module):
+    """ an unassuming Transformer block"""
+    
+    def __init__(self, config):
+        super().__init__()
+        self.ln_1 = nn.LayerNorm(config.n_embd)
+        self.attn = CausalSelfAttention(config)
+        self.ln_2 = nn.LayerNorm(config.n_embd)
+        self.mlp = nn.ModuleDict(dict(
+            c_fc    = nn.Linear(config.n_embd, 4 * config.n_embd), 
+            c_proj  = nn.Linear(4 * config.n_embd, config.n_embd)
+            act     = NewGELU(), 
+        ))
+        m = self.mlp 
+        self.mlpf = lambda x: m.c_proj(m.act(m.c_fc(x))) #MLP forward 
